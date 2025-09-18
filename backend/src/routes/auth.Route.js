@@ -8,11 +8,8 @@ const router = express.Router();
 //router.use(protectRoute) //bunu ekleyince alttaki tüm route ları korumaya alır.
 
 router.post("/signup",signup)
-
 router.post("/login",login)
-
 router.post("/logout",logout)
-
 router.post("/onboarding",protectRoute,onboard) //onboarda geçmeden önce protectRoute ile kullanıcıyı doğrula
 
 export default router

@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.Route.js"
 import {connectDB} from "./lib/db.js"
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.Route.js"
+import chatRoutes from "./routes/chat.Route.js"
 
 dotenv.config(); /*dosya içeriğini okuyabilmesi için config methodunu run etmemiz gerekiyor.*/
 
@@ -15,7 +16,7 @@ app.use(cookieParser());
 
 app.use("/api/auth",authRoutes)
 app.use("/api/users",userRoutes)
-
+app.use("/api/chat",chatRoutes)
 
 app.listen(PORT,()=>{
     console.log(`server is running on port ${PORT}`)
