@@ -46,7 +46,10 @@ const userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref:"User"
         }
-    ]
+    ],
+    verified: { type: Boolean, default: false },
+    verificationCode: { type: String },
+    verificationCodeExpires: { type: Date }
 },{timestamps:true})
 
 

@@ -1,6 +1,11 @@
 import User from "../models/User.js";
 import jwt from  "jsonwebtoken";
 import { upsertStreamUser } from "../lib/stream.js";
+import nodemailer from "nodemailer";
+
+function generateVerificationCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 export async function signup(req,res){
     const {email , password, fullName} = req.body;
@@ -22,41 +27,37 @@ export async function signup(req,res){
         if(existingUser){
             return res.status(400).json({message:"Email already exists please use a different one. "});
         }
+        const code = generateVerificationCode();
 
         const idx = Math.floor(Math.random()*100)+1;
         const randomAvatar = `https:\\avatar.iran.liara.run/public/${idx}.png`
 
-        const newUser = await User.create({
-                    email,
-                    password,
-                    fullName,
-                    profilePic:randomAvatar
+        await User.create({
+            email,
+            password,
+            fullName,
+            profilePic: randomAvatar,
+            verificationCode: code,
+            verificationCodeExpires: Date.now() + 15 * 60 * 1000 // 15 dk geçerli
         });
 
-        try {
-            await upsertStreamUser({
-            id:newUser._id.toString(),
-            name:newUser.fullName,
-            image:newUser.profilePic || "",
+        const transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT,
+                secure: true,
+                auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
         });
-        console.log(`Stream user created successfully for ${newUser.fullName}`)
-        } catch (error) {
-            console.log("Error creating Stream user",error)
-        }
+        await transporter.sendMail({
+                from: `"My App" <${process.env.SMTP_USER}>`,
+                to: email,
+                subject: "Hesap Doğrulama Kodu",
+                text: `Kodunuz: ${code}`,
+                html: `<p>Merhaba <b>${fullName}</b>, doğrulama kodunuz: <b>${code}</b></p>`
+        });
+        res.status(201).json({success:true, message:"Signup successful. Check your email for verification code."});
 
-
-        const token=jwt.sign({userId:newUser._id},process.env.JWT_SECRET_KEY,{expiresIn:"7d"})
-
-        res.cookie("jwt",token,{
-            maxAge:7*24*60*60*1000,
-            httpOnly:true, // XSS atağını önlemek için
-            sameSite:"strict",  // CSRF atağını önlemek için
-            secure: process.env.NODE_ENV === "production"
-        })
-
-        res.status(201).json({succes:true,user:newUser})
     } catch (error) {
-        consol.log("Error in signup controller",error.message)
+        console.log("Error in signup controller",error.message)
         res.status(500).json({message:"Internal server error"});
     }
 }
@@ -70,6 +71,11 @@ export async function login(req,res){
 
         const user= await User.findOne({email});
         if(!user) return res.status(401).json({message:"Invalid email or password"});
+
+
+        if (!user.verified) {
+            return res.status(403).json({ message: "Please verify your email before logging in." });
+        }
 
         const isPasswordMatched = await user.matchPassword(password)
         if(!isPasswordMatched) return res.status(401).json({message:"Invalid email or password"});
@@ -137,5 +143,55 @@ export async function onboard(req,res){
     } catch (error) {
         console.log("Onboarding controller error",error.message)
         res.status(500).json({message:"Internal server error"});
+    }
+}
+
+export async function verifyCode(req, res) {
+    const { email, code } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        if (user.verified) return res.status(400).json({ message: "User already verified" });
+
+        if (user.verificationCode !== code) {
+        return res.status(400).json({ message: "Invalid verification code" });
+        }
+
+        if (user.verificationCodeExpires < Date.now()) {
+        return res.status(400).json({ message: "Verification code expired" });
+        }
+
+
+        user.verified = true;
+        user.verificationCode = undefined;
+        user.verificationCodeExpires = undefined;
+        await user.save();
+
+        try {
+            await upsertStreamUser({
+                id: user._id.toString(),
+                name: user.fullName,
+                image: user.profilePic || ""
+            });
+            console.log(`Stream user created successfully for ${user.fullName}`);
+        } catch (error) {
+            console.log("Error creating Stream user", error.message);
+        }
+
+
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET_KEY, {expiresIn:"7d"});
+        res.cookie("jwt", token, {
+            maxAge: 7*24*60*60*1000,
+            httpOnly: true,
+            sameSite:"strict",
+            secure: process.env.NODE_ENV==="production"
+        });
+
+        res.json({success:true, user, message:"Email verified successfully"});
+    } catch (error) {
+        console.log("Verify error:", error.message);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
