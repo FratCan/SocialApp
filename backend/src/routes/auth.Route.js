@@ -13,4 +13,7 @@ router.post("/logout",logout)
 router.post("/onboarding",protectRoute,onboard) //onboarda geçmeden önce protectRoute ile kullanıcıyı doğrula
 router.post("/verify-code", verifyCode);
 
+router.get("/me",protectRoute,(req,res)=>{
+    res.status(200).json({success:true,user:req.user});
+})
 export default router

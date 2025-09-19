@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import authRoutes from "./routes/auth.Route.js"
 import {connectDB} from "./lib/db.js"
 import cookieParser from "cookie-parser";
@@ -11,6 +12,7 @@ dotenv.config(); /*dosya içeriğini okuyabilmesi için config methodunu run etm
 const app=express()
 const PORT= process.env.PORT
 
+app.use(cors({ origin: "http://localhost:5174" , credentials:true})); //frontendin cookileri backende göndermesi için credentials:true yapıyoruz.
 app.use(express.json());
 app.use(cookieParser());
 

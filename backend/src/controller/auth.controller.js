@@ -190,6 +190,7 @@ export async function verifyCode(req, res) {
         });
 
         res.json({success:true, user, message:"Email verified successfully"});
+        res.status(201).json({success:true,user})
     } catch (error) {
         console.log("Verify error:", error.message);
         res.status(500).json({ message: "Internal server error" });
