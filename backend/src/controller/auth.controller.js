@@ -12,10 +12,10 @@ export async function signup(req,res){
 
     try {
         if(!email || !password || !fullName){
-            return res.status(400).json({error: 'All fields are required.'});
+            return res.status(400).json({ message: "All fields are required"});
         }
         if(password.length < 6){
-            return res.status(400).json({error: 'Password must be at least 6 characters.'})
+            return res.status(400).json({message: "Password must be at least 6 characters"})
         }
 
         const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -190,7 +190,6 @@ export async function verifyCode(req, res) {
         });
 
         res.json({success:true, user, message:"Email verified successfully"});
-        res.status(201).json({success:true,user})
     } catch (error) {
         console.log("Verify error:", error.message);
         res.status(500).json({ message: "Internal server error" });

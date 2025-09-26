@@ -7,6 +7,7 @@ import NotificationPage from "./pages/NotificationsPage.jsx";
 import OnboardingPage from "./pages/OnboardingPage.jsx";
 import CallPage from "./pages/CallPage.jsx";
 import ChatPage from "./pages/ChatPage.jsx";
+import VerifyEmail from './pages/VerifyEmail.jsx';
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from './lib/axios.js';
 import { Navigate } from 'react-router';
@@ -35,6 +36,7 @@ export default function App() {
         <Route path='/onboarding' element={authUser ? <OnboardingPage/> : <Navigate to="/login" />}/>
         <Route path='/call' element={authUser ? <CallPage/> : <Navigate to="/login"/>}/>
         <Route path='/chat' element={authUser ? <ChatPage/> : <Navigate to="/login"/>}/>
+        <Route path='/verify-email' element={<VerifyEmail />} />
       </Routes>
 
     </div>

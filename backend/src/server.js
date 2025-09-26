@@ -12,7 +12,7 @@ dotenv.config(); /*dosya içeriğini okuyabilmesi için config methodunu run etm
 const app=express()
 const PORT= process.env.PORT
 
-app.use(cors({ origin: "http://localhost:5174" , credentials:true})); //frontendin cookileri backende göndermesi için credentials:true yapıyoruz.
+app.use(cors({ origin: "http://localhost:5173" , credentials:true})); //frontendin cookileri backende göndermesi için credentials:true yapıyoruz.
 app.use(express.json());
 app.use(cookieParser());
 
