@@ -12,6 +12,7 @@ import { Navigate } from 'react-router';
 import PageLoader from './components/PageLoader.jsx';
 import useAuthUser from './hooks/useAuthUser.js';
 import { Toaster } from "react-hot-toast";
+import Layout from './components/Layout.jsx';
 
 //useQuery get data from api
 //useMutation post,put,delete data to api
@@ -35,17 +36,19 @@ export default function App() {
   if( isLoading ) return  <PageLoader/>;
 
   return (
-    <div>
+    <div className='h-screen' data-theme="night">
       <Routes>
         <Route path='/' element={isAuthenticated && isOnaboarded ? (
-          <HomePage/>
+          <Layout showSidebar={true}>
+            <HomePage/>
+          </Layout>
         ) : (
           <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
         )}/>
-        <Route path='/signup' element={!isAuthenticated ? <SignupPage/> : <Navigate to="/"/>}/>
-        <Route path='/login' element={!isAuthenticated ? <LoginPage/> : <Navigate to="/"/>}/>
+        <Route path='/signup' element={!isAuthenticated ? <SignupPage/> : <Navigate to={isOnaboarded ? "/" : "/onboarding"}/>}/>
+        <Route path='/login' element={!isAuthenticated ? <LoginPage/> : <Navigate to={isOnaboarded ? "/" : "/onboarding"}/>}/>
         <Route path='/notification' element={isAuthenticated ? <NotificationPage/> : <Navigate to="/login"/>}/>
-        <Route path='/onboarding' element={isAuthenticated ? (!isOnaboarded ? (<Onboarding/>) : (<Navigate to="/"/>)) : (<Navigate to="/login"/>)}/>
+        <Route path='/onboarding' element={isAuthenticated ? (!isOnaboarded ? (<OnboardingPage/>) : (<Navigate to="/"/>)) : (<Navigate to="/login"/>)}/>
         <Route path='/call' element={isAuthenticated ? <CallPage/> : <Navigate to="/login"/>}/>
         <Route path='/chat' element={isAuthenticated ? <ChatPage/> : <Navigate to="/login"/>}/>
         <Route path='/verify-email' element={<VerifyEmail />} />

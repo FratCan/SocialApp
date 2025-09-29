@@ -1,9 +1,7 @@
-import { QueryClient } from '@tanstack/react-query'
 import { ShipWheelIcon } from 'lucide-react'
 import {useState} from 'react'
-import { Link,useNavigate } from 'react-router'
-import { useMutation } from '@tanstack/react-query'
-import { signup } from '../lib/api.js'
+import { Link } from 'react-router'
+import  useSignUp  from '../hooks/useSignUp'
 
 const SignupPage = () => {
 
@@ -12,7 +10,7 @@ const SignupPage = () => {
     email:"",
     password:""
   })
-
+/*
   //const QueryClient = useQueryClient();
   const navigate = useNavigate();
   const {isPending,error,mutate:signupMutation} = useMutation({
@@ -23,10 +21,13 @@ const SignupPage = () => {
     }
     //onSuccess:()=>QueryClient.invalidateQueries(['authUser']),
   });
+  */
+  const {isPending,error,signUpMutation} = useSignUp()
+
 
   const handleSignup=(e)=>{
     e.preventDefault()   // formlarda submit butonuna basıldığında sayfanın yenilenmesini engeller bunun yerine benim istediğim fonksiyonu çalıştırır api çağırma gibi
-    signupMutation(signupData);
+    signUpMutation(signupData);
   }
   return (
     <div className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8" data-theme="forest">

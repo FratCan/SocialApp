@@ -1,14 +1,7 @@
-	import { useMutation, useQueryClient } from "@tanstack/react-query";
 	import { ShipWheelIcon } from "lucide-react";
 	import { useState } from "react";
-	import { Link, useNavigate, useLocation } from "react-router";
-	import { verify } from "../lib/api.js";
-
+	import useVerifyEmail from "../hooks/useVerifyEmail";
 	const VerifyEmail = () => {
-	const location = useLocation();
-	const navigate = useNavigate();
-	const queryClient = useQueryClient();
-
 
 	const prefilledEmail = location.state?.email || localStorage.getItem("pendingEmail") || "";
 
@@ -18,7 +11,8 @@
 		code: "",
 	});
 	console.log("Verify request data:", verifyData);
-
+    /*
+	const queryClient = useQueryClient();
 	const { isPending, error, mutate:verifyMutation } = useMutation({
 		mutationFn: verify,
 		onSuccess: (data) => {
@@ -27,6 +21,8 @@
 			navigate("/onboarding");
 		},
 	});
+    */
+    const{isPending,error,verifyMutation}=useVerifyEmail()
 
 	const handleVerify = (e) => {
 		e.preventDefault();
