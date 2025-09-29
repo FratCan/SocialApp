@@ -30,7 +30,7 @@ export async function signup(req,res){
         const code = generateVerificationCode();
 
         const idx = Math.floor(Math.random()*100)+1;
-        const randomAvatar = `https:\\avatar.iran.liara.run/public/${idx}.png`
+        const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
         await User.create({
             email,

@@ -10,3 +10,13 @@ export const verify = async (verifyData) => {
 	const res = await axiosInstance.post("/auth/verify-code", verifyData);
 	return res.data;
 }
+
+export const getAuther = async () => {
+    const res = await axiosInstance.get('/auth/me');
+    return res.data;
+}
+
+export const onaboard = async (onaboardData) => {
+	const res = await axiosInstance.post('/auth/onboarding',onaboardData);
+	return res.data;
+}

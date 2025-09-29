@@ -23,9 +23,9 @@
 		mutationFn: verify,
 		onSuccess: (data) => {
 			queryClient.setQueryData(["authUser"], { user: data.user });
-			queryClient.invalidateQueries(["authUser"]);
+			//queryClient.invalidateQueries(["authUser"]);
 			navigate("/onboarding");
-			},
+		},
 	});
 
 	const handleVerify = (e) => {
